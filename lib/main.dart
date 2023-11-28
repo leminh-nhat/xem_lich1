@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:vnlunar/vnlunar.dart';
-
+import './even.dart';
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -20,6 +20,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   DateTime today = DateTime.now();
+  DateTime selectedDay = DateTime.now();
+  DateTime focusedDay= DateTime.now();
+  // DateTime focusedDay = DateTime.now();
+  CalendarFormat format = CalendarFormat.month;
+
+
+  Map<DateTime, List<Event>> selectedEvents ={};
+  TextEditingController _eventController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  List<Event> _getEventsfromDay(DateTime date) {
+    return selectedEvents[date] ?? [];
+  }
+
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
@@ -39,6 +57,7 @@ class _MyAppState extends State<MyApp> {
         backgroundColor: Colors.blue,
       ),
       body: content(),
+      
     );
   }
 
@@ -97,17 +116,6 @@ class _MyAppState extends State<MyApp> {
                   ],
                 ),
                 true),
-            // infoBox(
-            //     const Column(
-            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //       crossAxisAlignment: CrossAxisAlignment.center,
-            //       children: <Widget>[
-            //         Text("Tháng"),
-            //      //   Text(lunarMonth.toString(), style: bodyStyle),
-            //      //   Text(lunarMonthName, style: bottomStyle),
-            //       ],
-            //     ),
-            //     false)
           ],
         ),
       )),
@@ -115,34 +123,135 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget content() {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        
+      ),
+      body: Column(
         children: [
-          // Text(
-          //     "Selected Day (Dương lịch) = ${DateFormat('dd-MM-yyyy').format(today)}"),
-          // Text("Selected Day (Âm lịch) = ${convertToLunar(today)}"),
           Container(
             child: getDateInfo(today),
           ),
 
-          Container(
-            child: TableCalendar(
-              rowHeight: 43,
-              headerStyle: HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
+          TableCalendar(
+            focusedDay: today,
+            firstDay: DateTime(1990),
+            lastDay: DateTime(2050),
+            calendarFormat: format,
+            onFormatChanged: (CalendarFormat _format) {
+              setState(() {
+                format = _format;
+              });
+            },
+            startingDayOfWeek: StartingDayOfWeek.sunday,
+            // daysOfWeekVisible: true,
+
+            //Day Changed
+            onDaySelected: (DateTime selectDay, DateTime focusDay) {
+              setState(() {
+                selectedDay = selectDay;
+                focusedDay = focusDay;
+              });
+            },
+            selectedDayPredicate: (DateTime date) {
+              return isSameDay(selectedDay, date);
+            },
+
+            eventLoader: _getEventsfromDay,
+
+            //To style the Calendar
+            calendarStyle: CalendarStyle(
+              isTodayHighlighted: true,
+              selectedDecoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
               ),
-              availableGestures: AvailableGestures.all,
-              locale: "en_US",
-              onDaySelected: _onDaySelected,
-              selectedDayPredicate: (day) => isSameDay(day, today),
-              focusedDay: today,
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2050, 10, 16),
+              selectedTextStyle: TextStyle(color: Colors.white),
+              todayDecoration: BoxDecoration(
+                color: Colors.purpleAccent,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              defaultDecoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              weekendDecoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            headerStyle: HeaderStyle(
+              formatButtonDecoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              formatButtonTextStyle: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
+          // Wiew event
+            ..._getEventsfromDay(selectedDay).map(
+            (Event event) => Container(
+              margin: EdgeInsets.only(top: 20.0),
+              width: 800,
+              child: ListTile(
+              title: Text(
+                event.title,
+                style: TextStyle(
+                  color: Colors.white,
+                  
+                ),
+                textAlign: TextAlign.center,
+              ),
+              tileColor: Color.fromARGB(255, 88, 87, 87),
+            ),
+            )
+          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Thêm sự kiện"),
+            content: TextFormField(
+              controller: _eventController,
+            ),
+            actions: [
+              
+              TextButton(
+                child: Text("Thêm"),
+                onPressed: () {
+                  if (_eventController.text.isEmpty) {
+
+                  } else {
+                    selectedEvents[selectedDay] = [
+                        Event(_eventController.text)
+                      ];
+                    // if (selectedEvents[selectedDay] != null) {
+                    //   selectedEvents[selectedDay].add(
+                    //     Event(_eventController.text),
+                    //   );
+                    // } else {
+                    //   selectedEvents[selectedDay] = [
+                    //     Event(_eventController.text)
+                    //   ];
+                    // }
+                  }
+                  Navigator.pop(context);
+                  _eventController.clear();
+                  setState((){});
+                  return;
+                },
+              ),
+            ],
+          ),
+        ),
+        label: Text("Thêm sự kiện"),
+        icon: Icon(Icons.add),
       ),
     );
   }
