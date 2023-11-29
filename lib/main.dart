@@ -19,7 +19,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  DateTime today = DateTime.now();
+  //DateTime today = DateTime.now();
+
   DateTime selectedDay = DateTime.now();
   DateTime focusedDay= DateTime.now();
   // DateTime focusedDay = DateTime.now();
@@ -39,11 +40,11 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() {
-      today = day;
-    });
-  }
+  // void _onDaySelected(DateTime day, DateTime focusedDay) {
+  //   setState(() {
+  //     today = day;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -54,23 +55,23 @@ class _MyAppState extends State<MyApp> {
           image: AssetImage('assets/image1.png'),
           fit: BoxFit.fitWidth,
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.grey,
       ),
       body: content(),
       
     );
   }
 
-  String convertToLunar(DateTime date) {
-    final chuyenngay = Lunar(createdFromSolar: true, date: date);
+  // String convertToLunar(DateTime date) {
+  //   final chuyenngay = Lunar(createdFromSolar: true, date: date);
 
-    return "${chuyenngay.day}-${chuyenngay.month}-${chuyenngay.year}";
-  }
+  //   return "${chuyenngay.day}-${chuyenngay.month}-${chuyenngay.year}";
+  // }
 
   Widget infoBox(Widget widget, bool hasBorder) {
     return Expanded(
       child: (Container(
-        padding: const EdgeInsets.only(right: 10),
+       // padding: const EdgeInsets.only(right: -.10, left: -.10, top: 2, bottom: 2),
         decoration: BoxDecoration(
             border: Border(
                 right:
@@ -85,11 +86,23 @@ class _MyAppState extends State<MyApp> {
     var lunar = Lunar(createdFromSolar: true, date: date);// solar to lunar
     return Container(
       height: 120,
-      color: Color.fromARGB(255, 112, 55, 217)..withOpacity(0.3),
+      color: Colors.deepPurple.withOpacity(0.3),
       child: (IntrinsicHeight(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            infoBox(
+                 Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text("Hôm nay", style: TextStyle(fontSize: 23)),
+                    Text(
+                      "${DateFormat('EE d-MMM-yyyy').format(DateTime.now())}",
+                      style: TextStyle(height: -.3, fontSize: 23), ),
+                  ],
+                ),
+                false),
             infoBox(
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -97,7 +110,7 @@ class _MyAppState extends State<MyApp> {
                   children: <Widget>[
                     Text("Dương Lịch:", style: TextStyle(fontSize: 23)),
                     Text(
-                      "${DateFormat('dd-MM-yyyy').format(today)}",
+                      "${DateFormat('dd-MM-yyyy').format(date)}",
                       style: TextStyle(height: -.3, fontSize: 23),
                     ),
                   ],
@@ -124,17 +137,17 @@ class _MyAppState extends State<MyApp> {
 
   Widget content() {
     return Scaffold(
-      appBar: AppBar(
+      // appBar: AppBar(
         
-      ),
+      // ),
       body: Column(
         children: [
           Container(
-            child: getDateInfo(today),
+            child: getDateInfo(selectedDay),
           ),
 
           TableCalendar(
-            focusedDay: today,
+            focusedDay: focusedDay,
             firstDay: DateTime(1990),
             lastDay: DateTime(2050),
             calendarFormat: format,
