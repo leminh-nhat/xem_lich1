@@ -248,21 +248,8 @@ class _MyAppState extends State<MyApp>  {
               TextButton(
                 child: Text("Thêm"),
                 onPressed: () {
-                  if (_eventController.text.isEmpty) {
-                  } else {
-                    selectedEvents[selectedDay] = [
-                      Event(_eventController.text)
-                    ];
-                    // if (selectedEvents[selectedDay] != null) {
-                    //   selectedEvents[selectedDay].add(
-                    //     Event(_eventController.text),
-                    //   );
-                    // } else {
-                    //   selectedEvents[selectedDay] = [
-                    //     Event(_eventController.text)
-                    //   ];
-                    // }
-                  }
+                    selectedEvents[selectedDay] = [ Event(_eventController.text)];
+                    
                   Navigator.pop(context);
                   _eventController.clear();
                   setState(() {});
