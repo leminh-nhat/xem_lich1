@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:vnlunar/vnlunar.dart';
 import './even.dart';
+
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -18,16 +19,15 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp>  {
   //DateTime today = DateTime.now();
 
   DateTime selectedDay = DateTime.now();
-  DateTime focusedDay= DateTime.now();
+  DateTime focusedDay = DateTime.now();
   // DateTime focusedDay = DateTime.now();
   CalendarFormat format = CalendarFormat.month;
 
-
-  Map<DateTime, List<Event>> selectedEvents ={};
+  Map<DateTime, List<Event>> selectedEvents = {};
   TextEditingController _eventController = TextEditingController();
 
   @override
@@ -39,7 +39,6 @@ class _MyAppState extends State<MyApp> {
     return selectedEvents[date] ?? [];
   }
 
-
   // void _onDaySelected(DateTime day, DateTime focusedDay) {
   //   setState(() {
   //     today = day;
@@ -48,17 +47,32 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    int season() {
+      if (selectedDay.month==3||selectedDay.month==4||selectedDay.month==5) {
+        return 1;
+      }
+      if (selectedDay.month==6||selectedDay.month==7||selectedDay.month==8) {
+        return 2;
+      }
+      if (selectedDay.month==9||selectedDay.month==10||selectedDay.month==11) {
+        return 3;
+      }
+      if (selectedDay.month==12||selectedDay.month==1||selectedDay.month==2) {
+        return 4;
+      }
+      return 0;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Lịch"),
         flexibleSpace: Image(
-          image: AssetImage('assets/image1.png'),
+          image: AssetImage('assets/image${season()}.jpg'),
           fit: BoxFit.fitWidth,
         ),
         backgroundColor: Colors.grey,
       ),
       body: content(),
-      
     );
   }
 
@@ -71,7 +85,7 @@ class _MyAppState extends State<MyApp> {
   Widget infoBox(Widget widget, bool hasBorder) {
     return Expanded(
       child: (Container(
-       // padding: const EdgeInsets.only(right: -.10, left: -.10, top: 2, bottom: 2),
+        // padding: const EdgeInsets.only(right: -.10, left: -.10, top: 2, bottom: 2),
         decoration: BoxDecoration(
             border: Border(
                 right:
@@ -82,8 +96,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget getDateInfo(DateTime date) {
-    
-    var lunar = Lunar(createdFromSolar: true, date: date);// solar to lunar
+    var lunar = Lunar(createdFromSolar: true, date: date); // solar to lunar
     return Container(
       height: 120,
       color: Colors.deepPurple.withOpacity(0.3),
@@ -92,14 +105,15 @@ class _MyAppState extends State<MyApp> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             infoBox(
-                 Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text("Hôm nay", style: TextStyle(fontSize: 23)),
                     Text(
                       "${DateFormat('EE d-MMM-yyyy').format(DateTime.now())}",
-                      style: TextStyle(height: -.3, fontSize: 23), ),
+                      style: TextStyle(height: -.3, fontSize: 23),
+                    ),
                   ],
                 ),
                 false),
@@ -138,7 +152,7 @@ class _MyAppState extends State<MyApp> {
   Widget content() {
     return Scaffold(
       // appBar: AppBar(
-        
+
       // ),
       body: Column(
         children: [
@@ -206,23 +220,20 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
           // Wiew event
-            ..._getEventsfromDay(selectedDay).map(
-            (Event event) => Container(
-              margin: EdgeInsets.only(top: 20.0),
-              width: 800,
-              child: ListTile(
-              title: Text(
-                event.title,
-                style: TextStyle(
-                  color: Colors.white,
-                  
+          ..._getEventsfromDay(selectedDay).map((Event event) => Container(
+                margin: EdgeInsets.only(top: 20.0),
+                width: 800,
+                child: ListTile(
+                  title: Text(
+                    event.title,
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  tileColor: Color.fromARGB(255, 88, 87, 87),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              tileColor: Color.fromARGB(255, 88, 87, 87),
-            ),
-            )
-          ),
+              )),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -234,16 +245,14 @@ class _MyAppState extends State<MyApp> {
               controller: _eventController,
             ),
             actions: [
-              
               TextButton(
                 child: Text("Thêm"),
                 onPressed: () {
                   if (_eventController.text.isEmpty) {
-
                   } else {
                     selectedEvents[selectedDay] = [
-                        Event(_eventController.text)
-                      ];
+                      Event(_eventController.text)
+                    ];
                     // if (selectedEvents[selectedDay] != null) {
                     //   selectedEvents[selectedDay].add(
                     //     Event(_eventController.text),
@@ -256,7 +265,7 @@ class _MyAppState extends State<MyApp> {
                   }
                   Navigator.pop(context);
                   _eventController.clear();
-                  setState((){});
+                  setState(() {});
                   return;
                 },
               ),
